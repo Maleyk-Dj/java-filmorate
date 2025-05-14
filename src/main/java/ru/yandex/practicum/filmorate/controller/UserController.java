@@ -2,9 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -49,10 +47,10 @@ public class UserController {
 
         if (!users.containsKey(user.getId())) {
             log.error("Пользователь с ID={} не найден", user.getId());
-            throw new ValidationException( "Пользователь не найден");
+            throw new ValidationException("Пользователь не найден");
         }
 
-       User oldUser=users.get(user.getId());
+        User oldUser = users.get(user.getId());
         oldUser.setName(user.getName());
         oldUser.setBirthday(user.getBirthday());
         oldUser.setEmail(user.getEmail());

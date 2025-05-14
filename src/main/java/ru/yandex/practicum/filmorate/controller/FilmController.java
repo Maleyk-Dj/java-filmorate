@@ -23,8 +23,8 @@ public class FilmController {
         return ++maxId;
     }
 
-    private boolean validation (Film film){
-        LocalDate startDateRelease=LocalDate.of(1895, 12, 28);
+    private boolean validation(Film film) {
+        LocalDate startDateRelease = LocalDate.of(1895, 12, 28);
         if (film.getReleaseDate().isBefore(startDateRelease))
             throw new ValidationException("Дата релиза должна быть не ранее 28.12.1985");
         return true;
@@ -48,7 +48,7 @@ public class FilmController {
         if (film.getId() == 0) {
             throw new ValidationException("Поле id обязательно при обновлении пользователя");
         }
-      Film oldFilm=films.get(film.getId());
+        Film oldFilm = films.get(film.getId());
         if (validation(oldFilm)) {
             oldFilm.setDuration(film.getDuration());
             oldFilm.setName(film.getName());
