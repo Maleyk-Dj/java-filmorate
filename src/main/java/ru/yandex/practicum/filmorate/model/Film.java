@@ -3,14 +3,13 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import jakarta.validation.constraints.*;
-import java.time.Duration;
-import java.time.Instant;
+import java.time.LocalDate;
 
 @Data
 @EqualsAndHashCode(of = {"id"})
 public class Film {
 
-    private long id;
+    private Long id;
 
     @NotBlank(message = "Название фильма не может быть пустым")
     private String name;
@@ -20,9 +19,9 @@ public class Film {
 
     @NotNull(message = "Дата релиза должна быть указана")
     @PastOrPresent(message = "Дата релиза не может быть в будущем")
-    private Instant releaseDate;
+    private LocalDate releaseDate;
 
     @NotNull(message = "Продолжительность фильма должна быть указана")
     @Positive(message = "Продолжительность фильма должна быть положительной")
-    private Duration duration;
+    private long duration;
 }

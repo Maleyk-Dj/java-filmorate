@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,8 +25,8 @@ class FilmControllerTest {
         Film newFilm = new Film();
         newFilm.setName("New Name");
         newFilm.setDescription("New Desc");
-        newFilm.setReleaseDate(Instant.parse("2010-07-16T00:00:00Z"));
-        newFilm.setDuration(Duration.ofMinutes(90));
+        newFilm.setReleaseDate(LocalDate.of(2001,12,14));
+        newFilm.setDuration(90);
 
         Film result = controller.addFilm(newFilm);
         assertNotNull(result.getId());
@@ -37,8 +38,8 @@ class FilmControllerTest {
         Film film = new Film();
         film.setName("Name");
         film.setDescription("Desc");
-        film.setReleaseDate(Instant.parse("2015-05-14T00:00:00Z"));
-        film.setDuration(Duration.ofMinutes(120));
+        film.setReleaseDate(LocalDate.of(1945,12,2));
+        film.setDuration(120);
 
         Film added = controller.addFilm(film);
 
@@ -53,16 +54,16 @@ class FilmControllerTest {
         Film film1 = new Film();
         film1.setName("Run");
         film1.setDescription("Desc Cool");
-        film1.setReleaseDate(Instant.parse("1997-05-08T00:00:00Z"));
-        film1.setDuration(Duration.ofMinutes(65));
+        film1.setReleaseDate(LocalDate.of(2014,2,23));
+        film1.setDuration(60);
 
         controller.addFilm(film1);
 
         Film film2 = new Film();
         film2.setName("Stoop");
         film2.setDescription("Desc Very Cool");
-        film2.setReleaseDate(Instant.parse("2015-05-14T00:00:00Z"));
-        film2.setDuration(Duration.ofMinutes(65));
+        film2.setReleaseDate(LocalDate.of(1996,7,16));
+        film2.setDuration(110);
 
         controller.addFilm(film2);
 

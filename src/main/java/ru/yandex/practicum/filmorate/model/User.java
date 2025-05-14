@@ -4,14 +4,14 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.time.Instant;
+import java.time.LocalDate;
 
 
 @Data
 @EqualsAndHashCode(of = {"email"})
 public class User {
 
-    long id;
+    private Long id;
 
     @NotBlank(message = "Электронная почта не может быть пустой")
     @Email(message = "Некорректный формат электронной почты")
@@ -25,6 +25,6 @@ public class User {
 
     @NotNull(message = "Дата рождения должна быть указана")
     @Past(message = "Дата рождения не может быть в будущем")
-    Instant birthday;
+    LocalDate birthday;
 }
 

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
@@ -26,7 +27,7 @@ public class UserController {
 
     @PostMapping
     public User createUser(@Valid @RequestBody User user) {
-        log.info("Создаем пользователя: {}", user);
+        log.trace("Создаем пользователя: {}", user);
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
@@ -40,17 +41,25 @@ public class UserController {
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-        log.info("Запрос на обновления пользователя ID={}", user.getId(), user);
+        log.info("Запрос на обновление пользователя ID={}", user.getId());
 
-        if (!users.containsKey(user.getId())) {
-            log.error("Пользователь с ID=" + user.getId() + " не найден.");
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь не найден");
+        if (user.getId() == 0) {
+            throw new ValidationException("ID не указан");
         }
 
-        users.put(user.getId(), user);
+        if (!users.containsKey(user.getId())) {
+            log.error("Пользователь с ID={} не найден", user.getId());
+            throw new ValidationException( "Пользователь не найден");
+        }
 
-        log.info("Пользователь с ID={} успешно обновлен", user.getId());
-        return user;
+       User oldUser=users.get(user.getId());
+        oldUser.setName(user.getName());
+        oldUser.setBirthday(user.getBirthday());
+        oldUser.setEmail(user.getEmail());
+        oldUser.setLogin(user.getLogin());
+        log.info("Пользователь с ID={} успешно обновлён", user.getId());
+
+        return oldUser;
     }
 
     @GetMapping
