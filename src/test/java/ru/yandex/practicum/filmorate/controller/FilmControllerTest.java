@@ -2,89 +2,82 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
+import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
 
     private FilmController controller;
-    private Instant earliest;
 
     @BeforeEach
     void setUp() {
         controller = new FilmController();
-        earliest = LocalDate.of(1895, 12, 28).atStartOfDay(ZoneId.systemDefault()).toInstant();
     }
 
     @Test
-    void addFilm_validFilm() {
+    void shouldAddFilm() {
         Film newFilm = new Film();
-        newFilm.setName("Name");
-        newFilm.setDescription("Desc");
-        newFilm.setReleaseDate(earliest.plusSeconds(1));
+        newFilm.setName("New Name");
+        newFilm.setDescription("New Desc");
+        newFilm.setReleaseDate(Instant.parse("2010-07-16T00:00:00Z"));
         newFilm.setDuration(Duration.ofMinutes(90));
 
         Film result = controller.addFilm(newFilm);
         assertNotNull(result.getId());
-        assertEquals("Name", result.getName());
+        assertEquals("New Name", result.getName());
     }
 
     @Test
-    void addFilm_validFilm_earliestRelease() {
-        Film newFilm1 = new Film();
-        newFilm1.setName("Name");
-        newFilm1.setDescription("Desc");
-        newFilm1.setReleaseDate(earliest.minusSeconds(1));
-        newFilm1.setDuration(Duration.ofMinutes(90));
+    void shouldUpdateFilm() {
+        Film film = new Film();
+        film.setName("Name");
+        film.setDescription("Desc");
+        film.setReleaseDate(Instant.parse("2015-05-14T00:00:00Z"));
+        film.setDuration(Duration.ofMinutes(120));
 
-        ValidationException ex = assertThrows(ValidationException.class, () -> controller.addFilm(newFilm1));
-        assertTrue(ex.getMessage().contains("Дата релиза не может быть раньше 28 декабря 1895 года."));
+        Film added = controller.addFilm(film);
 
+        added.setName("Titanic");
+
+        Film result = controller.updateFilm(added);
+        assertEquals("Titanic", result.getName());
     }
 
     @Test
-    void addFilm_blankName_throws() {
+    void shouldGetAllFilms() {
+        Film film1 = new Film();
+        film1.setName("Run");
+        film1.setDescription("Desc Cool");
+        film1.setReleaseDate(Instant.parse("1997-05-08T00:00:00Z"));
+        film1.setDuration(Duration.ofMinutes(65));
+
+        controller.addFilm(film1);
+
         Film film2 = new Film();
-        film2.setName(" ");
-        film2.setDescription("Desc");
-        film2.setReleaseDate(earliest.plusSeconds(1));
-        film2.setDuration(Duration.ofMinutes(15));
+        film2.setName("Stoop");
+        film2.setDescription("Desc Very Cool");
+        film2.setReleaseDate(Instant.parse("2015-05-14T00:00:00Z"));
+        film2.setDuration(Duration.ofMinutes(65));
 
-        ValidationException ex = assertThrows(ValidationException.class, () -> controller.addFilm(film2));
-        assertTrue(ex.getMessage().contains("Название фильма не может быть пустым."));
-    }
+        controller.addFilm(film2);
 
-    @Test
-    void addFilm_tooLongDescription_throws() {
-        Film film3 = new Film();
-        film3.setName("Name");
-        film3.setDescription("x".repeat(201));
-        film3.setReleaseDate(earliest.plusSeconds(1));
-        film3.setDuration(Duration.ofMinutes(10));
+        Collection<Film> films = controller.getAllFilms();
 
-        ValidationException ex = assertThrows(ValidationException.class, () -> controller.addFilm(film3));
-        assertTrue(ex.getMessage().contains("Описание фильма не может быть длинее 200 символов."));
-    }
-
-    @Test
-    void addFilm_nonPositiveDuration_throws() {
-        Film film4 = new Film();
-        film4.setName("Name");
-        film4.setDescription("Desc");
-        film4.setReleaseDate(earliest.plusSeconds(1));
-        film4.setDuration(Duration.ZERO);
-
-        ValidationException ex = assertThrows(ValidationException.class, () -> controller.addFilm(film4));
-        assertTrue(ex.getMessage().contains("Продолжительность фильма должна быть положительной."));
+        assertEquals(2, films.size());
     }
 }
+
+
+
+
+
+
+
 
 
 

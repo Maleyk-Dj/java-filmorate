@@ -23,8 +23,6 @@ public class FilmController {
         return ++maxId;
     }
 
-// */
-
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
         log.info("Добавляем фильм: {}", film);
