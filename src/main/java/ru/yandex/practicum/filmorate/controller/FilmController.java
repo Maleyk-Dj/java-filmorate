@@ -7,9 +7,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -23,10 +21,10 @@ public class FilmController {
         return ++maxId;
     }
 
-    private boolean validation(Film film) {
+    private boolean validate(Film film) {
         LocalDate startDateRelease = LocalDate.of(1895, 12, 28);
         if (film.getReleaseDate().isBefore(startDateRelease))
-            throw new ValidationException("Дата релиза должна быть не ранее 28.12.1985");
+            throw new ValidationException("Дата релиза должна быть не ранее 28.12.1895");
         return true;
     }
 
@@ -34,7 +32,7 @@ public class FilmController {
     public Film addFilm(@Valid @RequestBody Film film) {
         log.trace("Добавляем фильм: {}", film);
 
-        if (validation(film)) {
+        if (validate(film)) {
             film.setId(generateId());
             films.put(film.getId(), film);
             log.info("Фильм успешно добавлен с ID={}", film.getId());
@@ -44,24 +42,24 @@ public class FilmController {
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
-        log.trace("Запрос на обновление фильма ID={}", film.getId(), film);
+        log.trace("Запрос на обновление фильма ID={}", film.getId());
         if (film.getId() == 0) {
             throw new ValidationException("Поле id обязательно при обновлении пользователя");
         }
         Film oldFilm = films.get(film.getId());
-        if (validation(oldFilm)) {
+        if (validate(oldFilm)) {
             oldFilm.setDuration(film.getDuration());
             oldFilm.setName(film.getName());
             oldFilm.setDescription(film.getDescription());
             oldFilm.setReleaseDate(film.getReleaseDate());
         }
         log.info("Фильм с ID={} успешно обновлён", film.getId());
-        return film;
+        return oldFilm;
     }
 
     @GetMapping
-    public Collection<Film> getAllFilms() {
+    public List<Film> getAllFilms() {
         log.info("Запрос на получение всех фильмов ({} шт.)", films.size());
-        return films.values();
+        return new ArrayList<>(films.values());
     }
 }

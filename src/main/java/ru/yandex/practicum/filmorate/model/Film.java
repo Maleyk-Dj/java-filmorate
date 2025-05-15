@@ -1,14 +1,11 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
 
 @Data
-@EqualsAndHashCode(of = {"id"})
 public class Film {
 
     private Long id;

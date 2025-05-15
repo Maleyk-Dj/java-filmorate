@@ -6,9 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -61,8 +59,8 @@ public class UserController {
     }
 
     @GetMapping
-    public Collection<User> getAllUsers() {
+    public List<User> getAllUsers() {
         log.info("Запрос на получение всех пользователей ({} шт.)", users.size());
-        return users.values();
+        return new ArrayList<>(users.values());
     }
 }
