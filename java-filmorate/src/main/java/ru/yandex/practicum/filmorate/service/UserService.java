@@ -36,7 +36,7 @@ public class UserService {
 
         log.trace("Запрос на обновление пользователя ID={}", user.getId());
 
-        if (user.getId() == null || user.getId() == 0) {
+        if (user.getId() == null || user.getId() <= 0) {
             throw new ValidationException("ID не указан");
         }
         Optional<User> existingUser = userStorage.findById(user.getId());
@@ -54,6 +54,7 @@ public class UserService {
     }
 
     public User addFriend(Long userId, Long friendId) {
+
         log.debug("Попытка пользователя id={} добавить в друзья пользователя с id={}", userId, friendId);
 
         User user = getUserOrThrow(userId);
@@ -62,11 +63,12 @@ public class UserService {
         User friend = getUserOrThrow(friendId);
         log.debug("Найден пользователь для добавления в друзья с id={}", friendId);
 
+        if (userId.equals(friendId)) {
+            throw new ValidationException("Нельзя добавить себя в друзья");
+        }
+
         user.getFriends().add(friendId);
         friend.getFriends().add(userId);
-
-        userStorage.save(user);
-        userStorage.save(friend);
 
         log.debug("Пользователи {} и {} теперь друзья", userId, friendId);
         return user;
@@ -123,7 +125,7 @@ public class UserService {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
-        log.debug("Общих друзей получено", commonFriends.size());
+        log.debug("Общих друзей получено {}", commonFriends.size());
         return commonFriends;
     }
 
@@ -134,9 +136,9 @@ public class UserService {
     private User getUserOrThrow(Long id) {
         log.debug("Попытка найти пользователя с id={}", id);
         User user = userStorage.findById(id).orElseThrow(() -> {
-            log.warn("Пользователь с id={} не найден", id);
-            return new NotFoundException("Пользователь с id= " + id + " не найден");
+            throw new NotFoundException("Пользователь с id= " + id + " не найден");
         });
+
         log.debug("Пользователь с id={} найден", id);
         return user;
     }

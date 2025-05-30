@@ -61,7 +61,6 @@ public class FilmService {
 
         film.getLikes().add(userId);
         log.debug("Лайк успешно добавлен: filmId={}, userId={}", filmId, userId);
-        filmStorage.save(film);  // Сохраняем изменения!
         log.debug("Лайк успешно добавлен: filmId={}, userId={}", filmId, userId);
     }
 
