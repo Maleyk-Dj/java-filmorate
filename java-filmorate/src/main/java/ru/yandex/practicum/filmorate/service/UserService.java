@@ -65,6 +65,9 @@ public class UserService {
         user.getFriends().add(friendId);
         friend.getFriends().add(userId);
 
+        userStorage.save(user);
+        userStorage.save(friend);
+
         log.debug("Пользователи {} и {} теперь друзья", userId, friendId);
         return user;
     }
