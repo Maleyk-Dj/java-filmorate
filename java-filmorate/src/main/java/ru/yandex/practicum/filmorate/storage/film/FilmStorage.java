@@ -6,9 +6,9 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface FilmStorage {
-    public Film addFilm(Film film);
+    public Film save(Film film);
 
-    public Film updateFilm(Film film);
+    public Film update(Film film);
 
     public Collection<Film> getAllFilms();
 

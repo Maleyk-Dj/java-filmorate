@@ -4,9 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
+import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +20,34 @@ public class FilmService {
 
     private final FilmStorage filmStorage;
     private final UserService userService;
+
+    public Film addFilm(Film film) {
+        log.debug("Попытка добавить фильм: {}", film);
+        validate(film);
+        return filmStorage.save(film);
+    }
+
+    public Film updateFilm(Film film) {
+        log.debug("Попытка обновить фильм {}", film);
+        if (film.getId() == 0 || film.getId() == null) {
+            log.warn("Поле id не задано", film.getId());
+            throw new NotFoundException("Поле id обязательно при обновлении фильма.");
+        }
+        validate(film);
+        Film oldFilm = filmStorage.update(film);
+        if (validate(oldFilm)) {
+            oldFilm.setDuration(film.getDuration());
+            oldFilm.setName(film.getName());
+            oldFilm.setDescription(film.getDescription());
+            oldFilm.setReleaseDate(film.getReleaseDate());
+            log.debug("Фильм с id={} успешно обновлён", film.getId());
+        }
+        return oldFilm;
+    }
+
+    public Collection<Film> getAllFilms() {
+        return filmStorage.getAllFilms();
+    }
 
     public void addlike(Long filmId, Long userId) {
         log.debug("Попытка добавить лайк на фильм с id={} от пользователя с id={} ", filmId, userId);
@@ -55,5 +86,13 @@ public class FilmService {
                 .collect(Collectors.toList());
         log.debug("Получено топ-{} фильмов по количеству лайков", topFilms.size());
         return topFilms;
+    }
+
+    private boolean validate(Film film) {
+        log.debug("Попытка валидация фильма с id {}", film.getId());
+        LocalDate startDateRelease = LocalDate.of(1895, 12, 28);
+        if (film.getReleaseDate().isBefore(startDateRelease))
+            throw new ValidationException("Дата релиза должна быть не ранее 28.12.1895");
+        return true;
     }
 }

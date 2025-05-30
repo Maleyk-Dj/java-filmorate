@@ -1,11 +1,14 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
+import java.util.Collection;
 import java.util.List;
 
 @Slf4j
@@ -15,6 +18,24 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+
+    @PostMapping
+    public ResponseEntity<User> createUser(@RequestBody @Valid User user) {
+        User createdUser = userService.createUser(user);
+        return ResponseEntity.ok(createdUser);
+    }
+
+    @PutMapping
+    public ResponseEntity<User> updateUser(@Valid @RequestBody User user) {
+        User updatedUser = userService.updateUser(user);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    @GetMapping
+    public ResponseEntity<Collection<User>> getAllUsers() {
+        Collection<User> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
 
     @PutMapping("{id}/friends/{friendId}")
     public User addFriend(@PathVariable Long id, @PathVariable Long friendId) {

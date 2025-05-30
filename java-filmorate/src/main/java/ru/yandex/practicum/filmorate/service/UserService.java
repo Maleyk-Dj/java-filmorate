@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -17,6 +18,40 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserStorage userStorage;
+
+    public User createUser(User user) {
+        log.debug("Попытка создать пользователя с именем {}", user.getName());
+
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+            log.debug("Имя пользователя не задано, установлено имя логина {}", user.getLogin());
+
+        }
+        userStorage.save(user);
+        log.debug("Пользователь с id={} успешно создан", user.getId());
+        return user;
+    }
+
+    public User updateUser(User user) {
+
+        log.trace("Запрос на обновление пользователя ID={}", user.getId());
+
+        if (user.getId() == null || user.getId() == 0) {
+            throw new ValidationException("ID не указан");
+        }
+        Optional<User> existingUser = userStorage.findById(user.getId());
+        if (existingUser.isEmpty()) {
+            log.error("Пользователь с ID={} не найден", user.getId());
+            throw new NotFoundException("Пользователь не найден");
+        }
+        User updatedUser = userStorage.update(user);
+        log.info("Пользователь с ID={} успешно обновлён", user.getId());
+        return updatedUser;
+    }
+
+    public Collection<User> getAllUsers() {
+        return userStorage.getAllUsers();
+    }
 
     public User addFriend(Long userId, Long friendId) {
         log.debug("Попытка пользователя id={} добавить в друзья пользователя с id={}", userId, friendId);
@@ -106,4 +141,5 @@ public class UserService {
     public User getUserById(Long id) {
         return getUserOrThrow(id);
     }
+
 }

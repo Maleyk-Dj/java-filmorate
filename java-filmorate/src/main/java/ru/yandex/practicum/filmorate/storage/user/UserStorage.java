@@ -6,9 +6,9 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface UserStorage {
-    public User createUser(User user);
+    public void save(User user);
 
-    public User updateUser(User user);
+    public User update(User user);
 
     public Collection<User> getAllUsers();
 
