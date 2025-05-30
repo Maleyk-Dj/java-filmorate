@@ -21,7 +21,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody @Valid User user) {
-        User createdUser = userService.createUser(user);
+        User createdUser= userService.createUser(user);
         return ResponseEntity.ok(createdUser);
     }
 
@@ -44,27 +44,27 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
-    public User removeFriend(@PathVariable Long id, @PathVariable Long friendId) {
+    public ResponseEntity<User> removeFriend(@PathVariable Long id, @PathVariable Long friendId) {
         log.debug("Вызов метода removeFriend c параметрами:id={},friendId={}", id, friendId);
         User result = userService.removeFriend(id, friendId);
         log.debug("Пользователь с id={} удалил из друзей пользователя с id={} ", id, friendId);
-        return result;
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{id}/friends")
-    public Collection<User> getFriends(@PathVariable Long id) {
+    public ResponseEntity<Collection<User>> getFriends(@PathVariable Long id) {
         log.debug("Вызов метода getFriends c параметрами:id={}", id);
         Set<User> result = userService.getFriends(id);
         log.debug("Возвращен список друзей пользователя с id={} ", id);
-        return result;
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public Collection<User> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
+    public ResponseEntity<Collection<User>> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
         log.debug("Вызов метода getCommonFriends c параметрами:id={},otherId={}", id, otherId);
         Collection<User> result = userService.getCommonFriends(id, otherId);
         log.debug("Возвращен список общих друзей пользователей с id={},otherId={} ", id, otherId);
-        return result;
+        return ResponseEntity.ok(result);
     }
 
 }
