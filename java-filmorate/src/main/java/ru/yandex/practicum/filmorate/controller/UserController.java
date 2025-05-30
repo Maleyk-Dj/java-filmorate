@@ -37,12 +37,10 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @PutMapping("{id}/friends/{friendId}")
-    public User addFriend(@PathVariable Long id, @PathVariable Long friendId) {
-        log.debug("Вызов метода addFriend c параметрами:id={},friendId={}", id, friendId);
-        User result = userService.addFriend(id, friendId);
-        log.debug("Пользователь с id={} добавил в друзья пользователя с id={} ", id, friendId);
-        return result;
+    @PutMapping("/users/{id}/friends/{friendId}")
+    public ResponseEntity<User> addFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        User user = userService.addFriend(id, friendId);
+        return ResponseEntity.ok(user);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")

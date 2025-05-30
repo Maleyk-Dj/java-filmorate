@@ -134,7 +134,7 @@ public class UserService {
             log.warn("Пользователь с id={} не найден", id);
             return new NotFoundException("Пользователь с id= " + id + " не найден");
         });
-        log.debug("Пользователь с id={} не найден", id);
+        log.debug("Пользователь с id={} найден", id);
         return user;
     }
 
