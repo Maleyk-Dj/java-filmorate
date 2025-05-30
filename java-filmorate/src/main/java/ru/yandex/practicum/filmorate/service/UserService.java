@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -91,23 +92,23 @@ public class UserService {
         return user;
     }
 
-    public List<User> getFriends(Long userId) {
+    public Set<User> getFriends(Long userId) {
         log.debug("Получение списка друзей пользователя с id={}", userId);
 
         User user = getUserOrThrow(userId);
         log.debug("Найден пользователь с id={} метод getFriends", userId);
 
-        List<User> friends = user.getFriends().stream()
+        Set<User> friends = user.getFriends().stream()
                 .map(userStorage::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
 
         log.debug("Найдено {} друзей для пользователя с id={}", friends.size(), userId);
         return friends;
     }
 
-    public List<User> getCommonFriends(Long userId, Long otherId) {
+    public Collection<User> getCommonFriends(Long userId, Long otherId) {
         log.debug("Получение списка общих друзей пользователей с id={} и id={}", userId, otherId);
 
         User user = getUserOrThrow(userId);
@@ -135,9 +136,8 @@ public class UserService {
 
     private User getUserOrThrow(Long id) {
         log.debug("Попытка найти пользователя с id={}", id);
-        User user = userStorage.findById(id).orElseThrow(() -> {
-            throw new NotFoundException("Пользователь с id= " + id + " не найден");
-        });
+        User user = userStorage.findById(id).orElseThrow(() ->
+                new NotFoundException("Пользователь с id= " + id + " не найден"));
 
         log.debug("Пользователь с id={} найден", id);
         return user;

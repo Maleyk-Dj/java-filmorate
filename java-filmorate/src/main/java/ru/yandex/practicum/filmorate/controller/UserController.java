@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -52,17 +53,17 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends")
-    public List<User> getFriends(@PathVariable Long id) {
+    public Collection<User> getFriends(@PathVariable Long id) {
         log.debug("Вызов метода getFriends c параметрами:id={}", id);
-        List<User> result = userService.getFriends(id);
+        Set<User> result = userService.getFriends(id);
         log.debug("Возвращен список друзей пользователя с id={} ", id);
         return result;
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
+    public Collection<User> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
         log.debug("Вызов метода getCommonFriends c параметрами:id={},otherId={}", id, otherId);
-        List<User> result = userService.getCommonFriends(id, otherId);
+        Collection<User> result = userService.getCommonFriends(id, otherId);
         log.debug("Возвращен список общих друзей пользователей с id={},otherId={} ", id, otherId);
         return result;
     }
