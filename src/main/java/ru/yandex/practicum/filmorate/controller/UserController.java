@@ -1,66 +1,70 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Set;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
 
-    private final Map<Long, User> users = new HashMap<>();
-
-
-    private long generateId() {
-        long maxId = users.keySet().stream().mapToLong(id -> id).max().orElse(0);
-        return ++maxId;
-    }
+    private final UserService userService;
 
     @PostMapping
-    public User createUser(@Valid @RequestBody User user) {
-        log.trace("Создаем пользователя: {}", user);
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-        user.setId(generateId());
-        users.put(user.getId(), user);
-
-        log.info("Пользователь успешно создан с ID={}", user.getId());
-
-        return user;
+    public ResponseEntity<User> createUser(@RequestBody @Valid User user) {
+        User createdUser = userService.createUser(user);
+        return ResponseEntity.ok(createdUser);
     }
 
     @PutMapping
-    public User updateUser(@Valid @RequestBody User user) {
-        log.info("Запрос на обновление пользователя ID={}", user.getId());
-
-        if (user.getId() == 0) {
-            throw new ValidationException("ID не указан");
-        }
-
-        if (!users.containsKey(user.getId())) {
-            log.error("Пользователь с ID={} не найден", user.getId());
-            throw new ValidationException("Пользователь не найден");
-        }
-
-        User oldUser = users.get(user.getId());
-        oldUser.setName(user.getName());
-        oldUser.setBirthday(user.getBirthday());
-        oldUser.setEmail(user.getEmail());
-        oldUser.setLogin(user.getLogin());
-        log.info("Пользователь с ID={} успешно обновлён", user.getId());
-
-        return oldUser;
+    public ResponseEntity<User> updateUser(@Valid @RequestBody User user) {
+        User updatedUser = userService.updateUser(user);
+        return ResponseEntity.ok(updatedUser);
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
-        log.info("Запрос на получение всех пользователей ({} шт.)", users.size());
-        return new ArrayList<>(users.values());
+    public ResponseEntity<Collection<User>> getAllUsers() {
+        Collection<User> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
     }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public ResponseEntity<User> addFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        User user = userService.addFriend(id, friendId);
+        return ResponseEntity.ok(user);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public ResponseEntity<User> removeFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        log.debug("Вызов метода removeFriend c параметрами:id={},friendId={}", id, friendId);
+        User result = userService.removeFriend(id, friendId);
+        log.debug("Пользователь с id={} удалил из друзей пользователя с id={} ", id, friendId);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/{id}/friends")
+    public ResponseEntity<Collection<User>> getFriends(@PathVariable Long id) {
+        log.debug("Вызов метода getFriends c параметрами:id={}", id);
+        Set<User> result = userService.getFriends(id);
+        log.debug("Возвращен список друзей пользователя с id={} ", id);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public ResponseEntity<Collection<User>> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
+        log.debug("Вызов метода getCommonFriends c параметрами:id={},otherId={}", id, otherId);
+        Collection<User> result = userService.getCommonFriends(id, otherId);
+        log.debug("Возвращен список общих друзей пользователей с id={},otherId={} ", id, otherId);
+        return ResponseEntity.ok(result);
+    }
+
 }
