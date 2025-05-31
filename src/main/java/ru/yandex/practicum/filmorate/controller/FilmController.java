@@ -1,65 +1,66 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
-import java.time.LocalDate;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping("/films")
+@RequiredArgsConstructor
 public class FilmController {
 
-    private final Map<Long, Film> films = new HashMap<>();
-
-    private long generateId() {
-        long maxId = films.keySet().stream().mapToLong(id -> id).max().orElse(0);
-        return ++maxId;
-    }
-
-    private boolean validate(Film film) {
-        LocalDate startDateRelease = LocalDate.of(1895, 12, 28);
-        if (film.getReleaseDate().isBefore(startDateRelease))
-            throw new ValidationException("Дата релиза должна быть не ранее 28.12.1895");
-        return true;
-    }
+    private final FilmService filmService;
 
     @PostMapping
-    public Film addFilm(@Valid @RequestBody Film film) {
-        log.trace("Добавляем фильм: {}", film);
-
-        if (validate(film)) {
-            film.setId(generateId());
-            films.put(film.getId(), film);
-            log.info("Фильм успешно добавлен с ID={}", film.getId());
-        }
-        return film;
+    public ResponseEntity<Film> createFilm(@Valid @RequestBody Film film) {
+        Film created = filmService.addFilm(film);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping
-    public Film updateFilm(@Valid @RequestBody Film film) {
-        log.trace("Запрос на обновление фильма ID={}", film.getId());
-        if (film.getId() == 0) {
-            throw new ValidationException("Поле id обязательно при обновлении пользователя");
-        }
-        Film oldFilm = films.get(film.getId());
-        if (validate(oldFilm)) {
-            oldFilm.setDuration(film.getDuration());
-            oldFilm.setName(film.getName());
-            oldFilm.setDescription(film.getDescription());
-            oldFilm.setReleaseDate(film.getReleaseDate());
-        }
-        log.info("Фильм с ID={} успешно обновлён", film.getId());
-        return oldFilm;
+    public ResponseEntity<Film> updateFilm(@RequestBody @Valid Film film) {
+        Film updatedFilm = filmService.updateFilm(film);
+        return ResponseEntity.ok(updatedFilm);
+
     }
 
     @GetMapping
-    public List<Film> getAllFilms() {
-        log.info("Запрос на получение всех фильмов ({} шт.)", films.size());
-        return new ArrayList<>(films.values());
+    public ResponseEntity<Collection<Film>> getAllFilms() {
+        Collection<Film> films = filmService.getAllFilms();
+        return ResponseEntity.ok(films);
     }
+
+    @PutMapping("{id}/like/{userId}")
+    public void addLike(@PathVariable Long id, @PathVariable Long userId) {
+        log.debug("Вызов метода addLike() с параметрами:filmId={},userId={}", id, userId);
+        filmService.addlike(id, userId);
+        log.debug("Пользователь {} поставил лайк фильму {}", id, userId);
+
+    }
+
+    @DeleteMapping("{id}/like/{userId}")
+    public void removeLike(@PathVariable Long id, @PathVariable Long userId) {
+        log.debug("Вызов метода removeLike() c параметрами:filmId={},userId={}", id, userId);
+        filmService.removeLike(id, userId);
+        log.debug("Пользователь {} удалил лайк у фильма {}", id, userId);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
+        log.debug("Вызов метода getPopularFilms() c параметром count={}", count);
+        List<Film> popularFilms = filmService.getTopFilms(count);
+        log.debug("Вовзращено {} популярных фильмов", count);
+        return popularFilms;
+
+    }
+
 }
