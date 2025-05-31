@@ -40,7 +40,6 @@ public class FilmController {
     }
 
     @PutMapping("{id}/like/{userId}")
-
     public void addLike(@PathVariable Long id, @PathVariable Long userId) {
         log.debug("Вызов метода addLike() с параметрами:filmId={},userId={}", id, userId);
         filmService.addlike(id, userId);
