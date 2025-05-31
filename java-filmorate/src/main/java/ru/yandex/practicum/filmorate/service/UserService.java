@@ -135,17 +135,13 @@ public class UserService {
         return userStorage.findById(id);
     }
 
-    private User getUserOrThrow(Long id) {
+    public User getUserOrThrow(Long id) {
         log.debug("Попытка найти пользователя с id={}", id);
         User user = userStorage.findById(id).orElseThrow(() ->
                 new NotFoundException("Пользователь с id= " + id + " не найден"));
 
         log.debug("Пользователь с id={} найден", id);
         return user;
-    }
-
-    public User getUserById(Long id) {
-        return getUserOrThrow(id);
     }
 
 }

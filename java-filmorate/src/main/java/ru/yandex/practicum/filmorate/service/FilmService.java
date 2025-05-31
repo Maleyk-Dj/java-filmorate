@@ -56,7 +56,7 @@ public class FilmService {
                     log.warn("Фильм с id={} не найден", filmId);
                     return new NotFoundException("Фильм с id= " + filmId + " не найден");
                 });
-        userService.getUserById(userId);
+        userService.getUserOrThrow(userId);
         log.debug("Найден пользователь с id {} метод addlike ", userId);
 
         film.getLikes().add(userId);
@@ -68,7 +68,7 @@ public class FilmService {
         log.debug("Попытка удалить лайк на фильм с id={} от пользователя с id={} ", filmId, userId);
         Film film = filmStorage.findFilmById(filmId).orElseThrow(() -> new NotFoundException("Фильм с id=" + filmId + " не найден"));
 
-        userService.getUserById(userId);
+        userService.getUserOrThrow(userId);
         log.debug("Найден пользователь с id {} метод removeLike ", userId);
 
         if (!film.getLikes().remove(userId)) {
