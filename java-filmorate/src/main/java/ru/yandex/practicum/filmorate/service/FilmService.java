@@ -75,6 +75,7 @@ public class FilmService {
             log.warn("Удаление лайка не удалось — у пользователя с id={} нет лайка на фильме с id={}", userId, filmId);
             throw new NotFoundException("У пользователя с id=" + userId + " нет лайка на фильме с id=" + filmId);
         }
+        film.getLikes().remove(userId);
     }
 
     public List<Film> getTopFilms(int count) {
