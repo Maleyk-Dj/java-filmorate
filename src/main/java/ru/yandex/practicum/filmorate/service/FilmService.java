@@ -38,7 +38,7 @@ public class FilmService {
 
         updatedFilm.setName(film.getName());
         updatedFilm.setDescription(film.getDescription());
-        updatedFilm.setReleaseDate(updatedFilm.getReleaseDate());
+        updatedFilm.setReleaseDate(film.getReleaseDate());
         updatedFilm.setDuration(film.getDuration());
 
         filmStorage.update(updatedFilm);
