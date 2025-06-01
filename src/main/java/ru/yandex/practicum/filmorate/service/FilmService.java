@@ -23,40 +23,30 @@ public class FilmService {
 
     public Film addFilm(Film film) {
         log.debug("Попытка добавить фильм: {}", film);
-        validate(film);
         return filmStorage.save(film);
     }
 
     public Film updateFilm(Film film) {
         log.debug("Попытка обновить фильм {}", film);
-        if (film.getId() == 0 || film.getId() == null) {
-            log.warn("Поле id не задано", film.getId());
+        if (film.getId() == 0) {
+            log.debug("Поле id не задано ");
             throw new NotFoundException("Поле id обязательно при обновлении фильма.");
         }
-        validate(film);
-        Film oldFilm = filmStorage.update(film);
-        if (validate(oldFilm)) {
-            oldFilm.setDuration(film.getDuration());
-            oldFilm.setName(film.getName());
-            oldFilm.setDescription(film.getDescription());
-            oldFilm.setReleaseDate(film.getReleaseDate());
-            log.debug("Фильм с id={} успешно обновлён", film.getId());
+        Film updatedFilm = filmStorage.update(film);
+        if (updatedFilm == null) {
+            throw new NotFoundException("Фильм не найден.");
         }
-        return oldFilm;
+        return updatedFilm;
     }
 
     public Collection<Film> getAllFilms() {
         return filmStorage.getAllFilms();
     }
 
-    public void addlike(Long filmId, Long userId) {
+    public void addLike(Long filmId, Long userId) {
         log.debug("Попытка добавить лайк на фильм с id={} от пользователя с id={} ", filmId, userId);
-        Film film = filmStorage.findFilmById(filmId)
-                .orElseThrow(() -> {
-                    log.warn("Фильм с id={} не найден", filmId);
-                    return new NotFoundException("Фильм с id= " + filmId + " не найден");
-                });
-        userService.getUserOrThrow(userId);
+        Film film = getFilmById(filmId);
+        userService.getUserById(userId);
         log.debug("Найден пользователь с id {} метод addlike ", userId);
 
         film.getLikes().add(userId);
@@ -68,7 +58,7 @@ public class FilmService {
         log.debug("Попытка удалить лайк на фильм с id={} от пользователя с id={} ", filmId, userId);
         Film film = filmStorage.findFilmById(filmId).orElseThrow(() -> new NotFoundException("Фильм с id=" + filmId + " не найден"));
 
-        userService.getUserOrThrow(userId);
+        userService.getUserById(userId);
         log.debug("Найден пользователь с id {} метод removeLike ", userId);
 
         if (!film.getLikes().remove(userId)) {
@@ -89,11 +79,12 @@ public class FilmService {
         return topFilms;
     }
 
-    private boolean validate(Film film) {
-        log.debug("Попытка валидация фильма с id {}", film.getId());
-        LocalDate startDateRelease = LocalDate.of(1895, 12, 28);
-        if (film.getReleaseDate().isBefore(startDateRelease))
-            throw new ValidationException("Дата релиза должна быть не ранее 28.12.1895");
-        return true;
+    private Film getFilmById(Long filmId) {
+        return filmStorage.findFilmById(filmId)
+                .orElseThrow(() -> {
+                    log.warn("Фильм с id={} не найден", filmId);
+                    return new NotFoundException("Фильм с id= " + filmId + " не найден");
+                });
     }
+
 }

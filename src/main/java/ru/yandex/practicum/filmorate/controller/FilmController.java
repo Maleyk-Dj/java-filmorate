@@ -27,22 +27,20 @@ public class FilmController {
     }
 
     @PutMapping
-    public ResponseEntity<Film> updateFilm(@RequestBody @Valid Film film) {
-        Film updatedFilm = filmService.updateFilm(film);
-        return ResponseEntity.ok(updatedFilm);
-
+    public ResponseEntity<Film> updateFilm(@Valid @RequestBody Film film) {
+        return ResponseEntity.ok(filmService.updateFilm(film));
     }
 
     @GetMapping
     public ResponseEntity<Collection<Film>> getAllFilms() {
-        Collection<Film> films = filmService.getAllFilms();
-        return ResponseEntity.ok(films);
+        return ResponseEntity.ok(filmService.getAllFilms());
     }
+
 
     @PutMapping("{id}/like/{userId}")
     public void addLike(@PathVariable Long id, @PathVariable Long userId) {
         log.debug("Вызов метода addLike() с параметрами:filmId={},userId={}", id, userId);
-        filmService.addlike(id, userId);
+        filmService.addLike(id, userId);
         log.debug("Пользователь {} поставил лайк фильму {}", id, userId);
 
     }

@@ -59,10 +59,10 @@ public class UserService {
 
         log.debug("Попытка пользователя id={} добавить в друзья пользователя с id={}", userId, friendId);
 
-        User user = getUserOrThrow(userId);
+        User user = getUserById(userId);
         log.debug("Найден пользователь с id={} метод addFriend", userId);
 
-        User friend = getUserOrThrow(friendId);
+        User friend = getUserById(friendId);
         log.debug("Найден пользователь для добавления в друзья с id={}", friendId);
 
         if (userId.equals(friendId)) {
@@ -79,10 +79,10 @@ public class UserService {
     public User removeFriend(Long userId, Long friendId) {
         log.debug("Попытка пользователя id={} удалить из друзей пользователя с id={}", userId, friendId);
 
-        User user = getUserOrThrow(userId);
+        User user = getUserById(userId);
         log.debug("Найден пользователь с id={} метод removeFriend", userId);
 
-        User friend = getUserOrThrow(friendId);
+        User friend = getUserById(friendId);
         log.debug("Найден пользователь для удаления из друзей с id={}", friendId);
 
 
@@ -96,7 +96,7 @@ public class UserService {
     public Set<User> getFriends(Long userId) {
         log.debug("Получение списка друзей пользователя с id={}", userId);
 
-        User user = getUserOrThrow(userId);
+        User user = getUserById(userId);
         log.debug("Найден пользователь с id={} метод getFriends", userId);
 
         Set<User> friends = user.getFriends().stream()
@@ -112,8 +112,8 @@ public class UserService {
     public Collection<User> getCommonFriends(Long userId, Long otherId) {
         log.debug("Получение списка общих друзей пользователей с id={} и id={}", userId, otherId);
 
-        User user = getUserOrThrow(userId);
-        User other = getUserOrThrow(otherId);
+        User user = getUserById(userId);
+        User other = getUserById(otherId);
 
         log.debug("Пользователи найдены: {} и {}", userId, otherId);
 
@@ -135,13 +135,11 @@ public class UserService {
         return userStorage.findById(id);
     }
 
-    public User getUserOrThrow(Long id) {
+    public User getUserById(Long id) {
         log.debug("Попытка найти пользователя с id={}", id);
         User user = userStorage.findById(id).orElseThrow(() ->
                 new NotFoundException("Пользователь с id= " + id + " не найден"));
-
         log.debug("Пользователь с id={} найден", id);
         return user;
     }
-
 }

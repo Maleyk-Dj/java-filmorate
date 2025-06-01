@@ -26,5 +26,11 @@ public class Film {
     @Positive(message = "Продолжительность фильма должна быть положительной")
     private long duration;
 
+    @AssertTrue(message = "Дата релиза должна быть не ранее 28.12.1895")
+    private boolean isReleaseDateValid() {
+        LocalDate startReleaseDate = LocalDate.of(1895, 12, 28);
+        return releaseDate == null || !(releaseDate.isBefore(startReleaseDate));
+    }
+
     private Set<Long> likes = new HashSet<>();
 }

@@ -21,26 +21,22 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody @Valid User user) {
-        User createdUser = userService.createUser(user);
-        return ResponseEntity.ok(createdUser);
+        return ResponseEntity.ok(userService.createUser(user));
     }
 
     @PutMapping
     public ResponseEntity<User> updateUser(@Valid @RequestBody User user) {
-        User updatedUser = userService.updateUser(user);
-        return ResponseEntity.ok(updatedUser);
+        return ResponseEntity.ok(userService.updateUser(user));
     }
 
     @GetMapping
     public ResponseEntity<Collection<User>> getAllUsers() {
-        Collection<User> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @PutMapping("/{id}/friends/{friendId}")
     public ResponseEntity<User> addFriend(@PathVariable Long id, @PathVariable Long friendId) {
-        User user = userService.addFriend(id, friendId);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userService.addFriend(id, friendId));
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")

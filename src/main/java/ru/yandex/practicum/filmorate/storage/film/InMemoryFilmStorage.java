@@ -23,10 +23,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film update(Film film) {
-        if (!films.containsKey(film.getId())) {
-            throw new NotFoundException("Фильм с id=" + film.getId() + " не найден.");
-
-        }
         films.put(film.getId(), film);
         log.debug("Фильм с id={} обновлён в хранилище", film.getId());
         return film;
