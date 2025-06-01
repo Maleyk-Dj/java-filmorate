@@ -30,8 +30,8 @@ public class FilmService {
             log.debug("Поле id не задано ");
             throw new NotFoundException("Поле id обязательно при обновлении фильма.");
         }
-        Film result=getFilmById(film.getId());
-        Film updatedFilm =filmStorage.update(result);
+        Film result = getFilmById(film.getId());
+        Film updatedFilm = filmStorage.update(result);
         if (updatedFilm == null) {
             throw new NotFoundException("Фильм не найден.");
         }
