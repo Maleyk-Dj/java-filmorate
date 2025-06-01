@@ -2,9 +2,9 @@ package ru.yandex.practicum.filmorate.handler;
 
 public class ErrorResponse {
 
-    String error;
+    private final String error;
 
-    String description;
+    private final String description;
 
     public ErrorResponse(String error, String description) {
         this.error = error;

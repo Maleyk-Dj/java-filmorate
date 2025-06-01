@@ -30,20 +30,14 @@ public class FilmService {
             log.debug("Поле id не задано ");
             throw new NotFoundException("Поле id обязательно при обновлении фильма.");
         }
-        Film updatedFilm = getFilmById(film.getId());
+        Film existingFilm = getFilmById(film.getId());
 
-        if (updatedFilm == null) {
-            throw new NotFoundException("Фильм не найден.");
-        }
+        existingFilm.setName(film.getName());
+        existingFilm.setDescription(film.getDescription());
+        existingFilm.setReleaseDate(film.getReleaseDate());
+        existingFilm.setDuration(film.getDuration());
 
-        updatedFilm.setName(film.getName());
-        updatedFilm.setDescription(film.getDescription());
-        updatedFilm.setReleaseDate(film.getReleaseDate());
-        updatedFilm.setDuration(film.getDuration());
-
-        filmStorage.update(updatedFilm);
-
-        return updatedFilm;
+        return filmStorage.update(existingFilm);
     }
 
     public Collection<Film> getAllFilms() {

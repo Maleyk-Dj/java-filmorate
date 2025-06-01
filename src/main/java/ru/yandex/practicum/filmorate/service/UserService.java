@@ -41,11 +41,8 @@ public class UserService {
         if (user.getId() == null || user.getId() <= 0) {
             throw new ValidationException("ID не указан");
         }
-        Optional<User> existingUser = userStorage.findById(user.getId());
-        if (existingUser.isEmpty()) {
-            log.error("Пользователь с ID={} не найден", user.getId());
-            throw new NotFoundException("Пользователь не найден");
-        }
+        getUserById(user.getId());
+        log.debug("Пользователь с ID={} существует, начинаем обновление", user.getId());
         User updatedUser = userStorage.update(user);
         log.info("Пользователь с ID={} успешно обновлён", user.getId());
         return updatedUser;
