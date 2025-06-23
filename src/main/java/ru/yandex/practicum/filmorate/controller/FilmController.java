@@ -6,6 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.dto.NewFilmRequest;
+import ru.yandex.practicum.filmorate.dto.UpdateFilmRequest;
+import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -21,44 +27,60 @@ public class FilmController {
     private final FilmService filmService;
 
     @PostMapping
-    public ResponseEntity<Film> createFilm(@Valid @RequestBody Film film) {
-        Film created = filmService.addFilm(film);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    public ResponseEntity<FilmDto> createFilm(@Valid @RequestBody NewFilmRequest request) {
+        FilmDto filmDto = filmService.createFilm(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(filmDto);
     }
 
-    @PutMapping
-    public ResponseEntity<Film> updateFilm(@Valid @RequestBody Film film) {
-        return ResponseEntity.ok(filmService.updateFilm(film));
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<FilmDto> updateFilm(@PathVariable Long id, @Valid @RequestBody UpdateFilmRequest request) {
+        log.debug("Вызов метода updateFilm: id={}, request={}", id, request);
+        FilmDto updatedFilm = filmService.updateFilm(id, request);
+        return ResponseEntity.ok(updatedFilm);
     }
 
     @GetMapping
-    public ResponseEntity<Collection<Film>> getAllFilms() {
+    public ResponseEntity<Collection<FilmDto>> getAllFilms() {
+        log.debug("Вызов метода getAllFilms");
         return ResponseEntity.ok(filmService.getAllFilms());
     }
 
-
-    @PutMapping("{id}/like/{userId}")
-    public void addLike(@PathVariable Long id, @PathVariable Long userId) {
-        log.debug("Вызов метода addLike() с параметрами:filmId={},userId={}", id, userId);
-        filmService.addLike(id, userId);
-        log.debug("Пользователь {} поставил лайк фильму {}", id, userId);
-
+    @GetMapping("/{id}")
+    public ResponseEntity<FilmDto> getFilmById(@PathVariable Long id) {
+        log.debug("Вызов метода getFilmById: id={}", id);
+        return ResponseEntity.ok(filmService.findFilmById(id));
     }
 
-    @DeleteMapping("{id}/like/{userId}")
-    public void removeLike(@PathVariable Long id, @PathVariable Long userId) {
-        log.debug("Вызов метода removeLike() c параметрами:filmId={},userId={}", id, userId);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteFilmById(@PathVariable Long id) {
+        log.debug("Вызов метода deleteFilmById: id={}", id);
+        filmService.deleteFilmById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public ResponseEntity<Void> addLike(@PathVariable Long id, @PathVariable Long userId) {
+        log.debug("Вызов метода addLike: filmId={}, userId={}", id, userId);
+        filmService.addLike(id, userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public ResponseEntity<Void> removeLike(@PathVariable Long id, @PathVariable Long userId) {
+        log.debug("Вызов метода removeLike: filmId={}, userId={}", id, userId);
         filmService.removeLike(id, userId);
-        log.debug("Пользователь {} удалил лайк у фильма {}", id, userId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
-        log.debug("Вызов метода getPopularFilms() c параметром count={}", count);
-        List<Film> popularFilms = filmService.getTopFilms(count);
-        log.debug("Вовзращено {} популярных фильмов", count);
-        return popularFilms;
-
+    public ResponseEntity<List<FilmDto>> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
+        log.debug("Вызов метода getPopularFilms: count={}", count);
+        if (count <= 0) {
+            throw new ConditionsNotMetException("Параметр count должен быть положительным");
+        }
+        return ResponseEntity.ok(filmService.getTopFilms(count));
     }
-
 }
+

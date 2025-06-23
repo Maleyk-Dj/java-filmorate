@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -7,17 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
-
-    private Long id;
+public class NewUserRequest {
 
     String name;
 
@@ -29,12 +25,8 @@ public class User {
     @Pattern(regexp = "^[^\\s]+$", message = "Логин не может содержать пробелы")
     private String login;
 
-
-
     @NotNull(message = "Дата рождения должна быть указана")
     @Past(message = "Дата рождения не может быть в будущем")
     private LocalDate birthday;
 
-    private Set<Long> friends = new HashSet<>();
 }
-
