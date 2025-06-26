@@ -7,28 +7,26 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.dto.RatingIdAndNameDto;
 import ru.yandex.practicum.filmorate.service.RatingService;
 
-import java.util.Collection;
+import java.util.List;
 
-@Slf4j
 @RestController
-@RequestMapping("/ratings")
+@RequestMapping("/mpa")
 @RequiredArgsConstructor
+@Slf4j
 public class RatingController {
 
     private final RatingService ratingService;
 
     @GetMapping
-    public ResponseEntity<Collection<Rating>> getAllRatings() {
-        log.debug("Вызов метода getAllRatings");
-        return ResponseEntity.ok(ratingService.getAllRatings());
+    public ResponseEntity<List<RatingIdAndNameDto>> getAllRatings() {
+        return ResponseEntity.ok(ratingService.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Rating> getRatingById(@PathVariable int id) {
-        log.debug("Вызов метода getRatingById: id={}", id);
-        return ResponseEntity.ok(ratingService.getRatingById(id));
+    public ResponseEntity<RatingIdAndNameDto> getRatingById(@PathVariable int id) {
+        return ResponseEntity.ok(ratingService.getById(id));
     }
 }

@@ -1,17 +1,14 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Rating {
-    private Integer id;
-    @NotBlank(message = "Название рейтинга не может быть пустым")
-    private String name;
 
-    @NotBlank(message = "Описание рейтинга не может быть пустым")
-    private String description;
+    private int id;
+    private String name;
 }

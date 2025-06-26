@@ -1,36 +1,26 @@
 package ru.yandex.practicum.filmorate.dto;
 
-import java.time.LocalDate;
-
 import jakarta.validation.constraints.*;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import java.util.Set;
+import ru.yandex.practicum.filmorate.annotations.ValidReleaseDate;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class NewFilmRequest {
-
-    @NotBlank(message = "Название фильма не может быть пустым")
+    @NotBlank
     private String name;
-
-    @Size(max = 200, message = "Описание не может быть длиннее 200 символов")
+    @Size(max = 200)
     private String description;
-
-    @NotNull(message = "Дата релиза обязательна")
-    @PastOrPresent(message = "Дата релиза не может быть в будущем")
-    private LocalDate releaseDate;
-
     @NotNull
-    @Positive(message = "Продолжительность должна быть положительной")
-    private Long duration;
+    @PastOrPresent
+    @ValidReleaseDate
+    private LocalDate releaseDate;
+    @NotNull
+    @Positive
+    private Integer duration;
 
-    @Positive(message = "ID рейтинга должен быть положительным")
-    @NotNull(message = "ID рейтинга должен быть указан")
-    private Integer ratingId;
-
-    private Set<Integer> genreIds;
+    private RatingIdDto mpa;
+    private List<GenreIdDto> genres;
 }

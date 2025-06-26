@@ -1,54 +1,49 @@
 package ru.yandex.practicum.filmorate.mapper;
 
-import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import ru.yandex.practicum.filmorate.dto.FilmDto;
-import ru.yandex.practicum.filmorate.dto.NewFilmRequest;
-import ru.yandex.practicum.filmorate.dto.UpdateFilmRequest;
+import ru.yandex.practicum.filmorate.dto.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Rating;
 
-import java.util.Set;
+import java.util.List;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 public class FilmMapper {
 
-    public static FilmDto mapToFilmDto(Film film) {
-        FilmDto dto = new FilmDto();
-        dto.setId(film.getId());
-        dto.setName(film.getName());
-        dto.setDescription(film.getDescription());
-        dto.setReleaseDate(film.getReleaseDate());
-        dto.setDuration(film.getDuration());
-        dto.setMpa(film.getMpa());
-        dto.setGenres(film.getGenres());
-        return dto;
+    public static FilmResponseDto buildResponse(Film film,
+                                                RatingIdAndNameDto mpa,
+                                                List<GenreIdAndNameDto> genres) {
+        FilmResponseDto result = new FilmResponseDto();
+        result.setId(film.getId());
+        result.setName(film.getName());
+        result.setDescription(film.getDescription());
+        result.setDuration(film.getDuration());
+        result.setReleaseDate(film.getReleaseDate());
+        result.setGenres(genres);
+        result.setMpa(mpa);
+        return result;
     }
 
-    public static Film mapToFilm(NewFilmRequest request, Rating rating, Set<Genre>genres) {
+    public static Film mapToFilm(NewFilmRequest dto) {
         Film film = new Film();
-        film.setName(request.getName());
-        film.setDescription(request.getDescription());
-        film.setReleaseDate(request.getReleaseDate());
-        film.setDuration(request.getDuration());
-        film.setMpa(rating);
-        film.setGenres(genres);
+        film.setName(dto.getName());
+        film.setDescription(dto.getDescription());
+        film.setReleaseDate(dto.getReleaseDate());
+        film.setDuration(dto.getDuration());
+        film.setMpa(dto.getMpa());
+        film.setGenres(dto.getGenres());
         return film;
     }
 
-    public static void updateFilmFields(Film film, UpdateFilmRequest request, Rating rating, Set<Genre> genres) {
-        if (request.hasName()){
-            film.setName(request.getName());
-        }
-        if (request.hasDescription()){
-            film.setDescription(request.getDescription());
-        }
-        if (request.hasReleaseDate()){
-            film.setReleaseDate(request.getReleaseDate());
-        }
-        if (request.hasGenreIds()){
-            film.setGenres(genres);
-        }
+    public static Film updateFields(Film film,
+                                    UpdateFilmRequest dto,
+                                    RatingIdAndNameDto mpa,
+                                    List<GenreIdAndNameDto> genres) {
+        film.setName(dto.getName());
+        film.setDescription(dto.getDescription());
+        film.setReleaseDate(dto.getReleaseDate());
+        film.setDuration(dto.getDuration());
+        film.setMpa(RatingMapper.mapToRatingIdDto(mpa));
+        film.setGenres(GenreMapper.mapToListGenreIdDto(genres));
+        return film;
     }
 }

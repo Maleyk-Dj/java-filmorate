@@ -8,32 +8,26 @@ import java.util.Set;
 
 @Data
 public class UpdateFilmRequest {
+
+    @NotNull
+    private Long id;
+
+    @NotBlank
     private String name;
+
+    @Size(max = 200)
     private String description;
+
+    @NotNull
+    @PastOrPresent
     private LocalDate releaseDate;
+
+    @NotNull
+    @Positive
     private Long duration;
-    private Integer ratingId;
-    private Set<Integer> genreIds;
 
-    public boolean hasName() {
-        return (name != null && !name.isBlank());
-    }
+    @NotNull
+    private RatingIdDto mpa;
 
-    public boolean hasDescription() {
-        return (description != null && !description.isBlank());
-    }
-
-    public boolean hasReleaseDate() {
-        return releaseDate != null;
-    }
-    public boolean hasDuration() {
-        return duration != null;
-    }
-
-    public boolean hasGenreIds (){
-        return genreIds != null && !genreIds.isEmpty();
-    }
-    public boolean hasRatingId() {
-        return ratingId != null;
-    }
+    private Set<GenreIdDto> genres;
 }

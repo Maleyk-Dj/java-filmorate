@@ -7,29 +7,29 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.dto.GenreIdAndNameDto;
 import ru.yandex.practicum.filmorate.service.GenreService;
 
-import java.util.Collection;
+import java.util.List;
 
-@Slf4j
 @RestController
 @RequestMapping("/genres")
 @RequiredArgsConstructor
+@Slf4j
 public class GenreController {
 
     private final GenreService genreService;
 
     @GetMapping
-    public ResponseEntity<Collection<Genre>> getAllGenres() {
-        log.debug("Вызов метода getAllGenres");
-        return ResponseEntity.ok(genreService.getAllGenres());
+    public ResponseEntity<List<GenreIdAndNameDto>> getAllGenres() {
+        return ResponseEntity.ok(genreService.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Genre> getGenreById(@PathVariable int id) {
-        log.debug("Вызов метода getGenreById: id={}", id);
-        return ResponseEntity.ok(genreService.getGenreById(id));
+    public ResponseEntity<GenreIdAndNameDto> getGenreById(@PathVariable int id) {
+        return ResponseEntity.ok(genreService.getById(id));
     }
 }
+
+
 

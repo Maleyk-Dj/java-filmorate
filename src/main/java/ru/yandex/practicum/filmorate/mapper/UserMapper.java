@@ -1,43 +1,38 @@
 package ru.yandex.practicum.filmorate.mapper;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dto.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.model.User;
 
-@NoArgsConstructor (access = AccessLevel.PRIVATE)
+@Component
 public class UserMapper {
-    public static UserDto mapToUserDto(User user) {
+
+    public UserDto toDto(User user) {
         UserDto dto = new UserDto();
         dto.setId(user.getId());
-        dto.setName(user.getName());
         dto.setEmail(user.getEmail());
         dto.setLogin(user.getLogin());
+        dto.setName(user.getName());
         dto.setBirthday(user.getBirthday());
         return dto;
     }
-    public static User mapToUser (NewUserRequest request){
+
+    public User fromNewRequest(NewUserRequest req) {
         User user = new User();
-        user.setName(request.getName());
-        user.setEmail(request.getEmail());
-        user.setLogin(request.getLogin());
-        user.setBirthday(request.getBirthday());
+        user.setEmail(req.getEmail());
+        user.setLogin(req.getLogin());
+        user.setName(req.getName());
+        user.setBirthday(req.getBirthday());
         return user;
     }
 
-    public static User updateUserFields(User user, UpdateUserRequest request) {
-        if (request.hasEmail()){
-            user.setEmail(request.getEmail());
-        }
-        if (request.hasLogin()){
-            user.setLogin(request.getLogin());
-        }
-        if (request.hasUsername()){
-            user.setName(request.getName());
-        }
+    public User fromUpdateRequest(UpdateUserRequest req) {
+        User user = fromNewRequest(req);
+        user.setId(req.getId());
         return user;
-
     }
 }
+
+

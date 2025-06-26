@@ -1,14 +1,14 @@
 -- Начальные жанры
-MERGE INTO genre (genre_id, name) KEY (genre_id) VALUES (1, 'Комедия');
-MERGE INTO genre (genre_id, name) KEY (genre_id) VALUES (2, 'Драма');
-MERGE INTO genre (genre_id, name) KEY (genre_id) VALUES (3, 'Мультфильм');
-MERGE INTO genre (genre_id, name) KEY (genre_id) VALUES (4, 'Триллер');
-MERGE INTO genre (genre_id, name) KEY (genre_id) VALUES (5, 'Документальный');
-MERGE INTO genre (genre_id, name) KEY (genre_id) VALUES (6, 'Боевик');
+MERGE INTO genre (id, name) KEY (id) VALUES (1, 'Комедия');
+MERGE INTO genre (id, name) KEY (id) VALUES (2, 'Драма');
+MERGE INTO genre (id, name) KEY (id) VALUES (3, 'Мультфильм');
+MERGE INTO genre (id, name) KEY (id) VALUES (4, 'Триллер');
+MERGE INTO genre (id, name) KEY (id) VALUES (5, 'Документальный');
+MERGE INTO genre (id, name) KEY (id) VALUES (6, 'Боевик');
 
 -- Начальные рейтинги (MPA)
-MERGE INTO rating (rating_id, name, description) KEY (rating_id) VALUES (1, 'G', 'Для всех возрастов');
-MERGE INTO rating (rating_id, name, description) KEY (rating_id) VALUES (2, 'PG', 'Родительский контроль желателен');
-MERGE INTO rating (rating_id, name, description) KEY (rating_id) VALUES (3, 'PG-13', 'Не рекомендуется детям до 13 лет');
-MERGE INTO rating (rating_id, name, description) KEY (rating_id) VALUES (4, 'R', 'До 17 лет обязательно сопровождение родителей');
-MERGE INTO rating (rating_id, name, description) KEY (rating_id) VALUES (5, 'NC-17', 'Только для взрослых (18+)');
+MERGE INTO rating (id, name) KEY (id) VALUES (1, 'G');
+MERGE INTO rating (id, name) KEY (id) VALUES (2, 'PG');
+MERGE INTO rating (id, name) KEY (id) VALUES (3, 'PG-13');
+MERGE INTO rating (id, name) KEY (id) VALUES (4, 'R');
+MERGE INTO rating (id, name) KEY (id) VALUES (5, 'NC-17');

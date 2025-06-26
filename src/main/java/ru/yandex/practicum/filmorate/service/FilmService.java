@@ -1,122 +1,96 @@
 package ru.yandex.practicum.filmorate.service;
 
+
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dto.FilmDto;
-import ru.yandex.practicum.filmorate.dto.NewFilmRequest;
-import ru.yandex.practicum.filmorate.dto.UpdateFilmRequest;
+import ru.yandex.practicum.filmorate.dto.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Rating;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.repository.GenreDbStorage;
+import ru.yandex.practicum.filmorate.repository.RatingDbStorage;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
-@Slf4j
+
 @Service
 @RequiredArgsConstructor
 public class FilmService {
-    @Qualifier("filmDbStorage")
+
     private final FilmStorage filmStorage;
     private final GenreService genreService;
     private final RatingService ratingService;
 
-    public FilmDto createFilm(NewFilmRequest request) {
-        log.debug("Создание фильма: {}", request);
+    public FilmResponseDto createFilm(NewFilmRequest request) {
+        // Преобразование запроса в модель
+        Film film = FilmMapper.mapToFilm(request);
 
-        Rating rating = ratingService.getRatingById(request.getRatingId());
-        Set<Genre> genres = genreService.getGenresByIds(request.getGenreIds());
+        // Получение полной информации о рейтинге и жанрах
+        RatingIdAndNameDto mpa = ratingService.getById(request.getMpa().getId());
+        List<GenreIdAndNameDto> genres = genreService.getByIds(request.getGenres());
 
-        Film film = FilmMapper.mapToFilm(request, rating, genres);
-        Film savedFilm = filmStorage.save(film);
+        // Сохраняем фильм
+        Film saved = filmStorage.save(film);
 
-        // Загружаем полные данные для возврата
-        Film fullFilm = filmStorage.findFilmById(savedFilm.getId())
-                .orElseThrow(() -> new IllegalStateException("Фильм сохранён, но не найден"));
-
-        return FilmMapper.mapToFilmDto(fullFilm);
+        // Строим и возвращаем DTO ответа
+        return FilmMapper.buildResponse(saved, mpa, genres);
     }
 
-    public FilmDto updateFilm(Long id, UpdateFilmRequest request) {
-        log.debug("Попытка обновить фильм с id={} данными: {}", id, request);
+    public FilmResponseDto updateFilm(UpdateFilmRequest request) {
+        Film existing = filmStorage.findFilmById(request.getId())
+                .orElseThrow(() -> new NotFoundException("Фильм не найден"));
 
-        Film film = filmStorage.findFilmById(id)
-                .orElseThrow(() -> new NotFoundException("Фильм с id=" + id + " не найден"));
+        RatingIdAndNameDto mpa = ratingService.getById(request.getMpa().getId());
 
-        Rating rating = request.hasRatingId()
-                ? ratingService.getRatingById(request.getRatingId())
-                : film.getMpa();
+        List<GenreIdAndNameDto> genres = (request.getGenres() == null || request.getGenres().isEmpty())
+                ? Collections.emptyList()
+                : genreService.getByIds(request.getGenres());
 
-        Set<Genre> genres = request.hasGenreIds()
-                ? genreService.getGenresByIds(request.getGenreIds())
-                : film.getGenres();
+        Film updated = FilmMapper.updateFields(existing, request, mpa, genres);
 
-        FilmMapper.updateFilmFields(film, request, rating, genres);
-        Film updated = filmStorage.update(film);
+        filmStorage.update(updated);
 
-        log.info("Фильм с id={} успешно обновлён", updated.getId());
-        return FilmMapper.mapToFilmDto(updated);
+        return FilmMapper.buildResponse(updated, mpa, genres);
     }
 
-    public Collection<FilmDto> getAllFilms() {
-        log.debug("Получение всех фильмов");
+
+    public List<FilmResponseDto> getAllFilms() {
         return filmStorage.getAllFilms().stream()
-                .map(FilmMapper::mapToFilmDto)
+                .map(film -> {
+                    RatingIdAndNameDto mpa = filmStorage.getRatingByFilmId(film.getId());
+                    List<GenreIdAndNameDto> genres = filmStorage.getGenresByFilmId(film.getId());
+                    return FilmMapper.buildResponse(film, mpa, new ArrayList<>(genres));
+                })
                 .collect(Collectors.toList());
     }
 
-    public FilmDto findFilmById(Long id) {
-        log.debug("Поиск фильма с id={}", id);
-        return filmStorage.findFilmById(id)
-                .map(FilmMapper::mapToFilmDto)
-                .orElseThrow(() -> new NotFoundException("Фильм с id=" + id + " не найден"));
-    }
+    public FilmResponseDto getFilmById(Long id) {
+        Film film = filmStorage.findFilmById(id)
+                .orElseThrow(() -> new NotFoundException("Фильм не найден"));
 
-    public void deleteFilmById(Long id) {
-        log.debug("Удаление фильма с id={}", id);
-        filmStorage.deleteFilmById(id);
-        log.info("Фильм с id={} удалён", id);
+        RatingIdAndNameDto mpa = filmStorage.getRatingByFilmId(id);
+        List<GenreIdAndNameDto> genres = filmStorage.getGenresByFilmId(id);
+
+        return FilmMapper.buildResponse(film, mpa, new ArrayList<>(genres));
     }
 
     public void addLike(Long filmId, Long userId) {
-        log.debug("Попытка добавить лайк: фильм={}, пользователь={}", filmId, userId);
-
-        if (filmStorage.findFilmById(filmId).isEmpty()) {
-            throw new NotFoundException("Фильм с id=" + filmId + " не найден");
-        }
-
         filmStorage.addLike(filmId, userId);
-        log.info("Лайк добавлен: фильм={}, пользователь={}", filmId, userId);
     }
 
     public void removeLike(Long filmId, Long userId) {
-        log.debug("Попытка удалить лайк: фильм={}, пользователь={}", filmId, userId);
-
-        if (filmStorage.findFilmById(filmId).isEmpty()) {
-            throw new NotFoundException("Фильм с id=" + filmId + " не найден");
-        }
-
-        boolean removed = filmStorage.removeLike(filmId, userId);
-        if (!removed) {
-            throw new NotFoundException("Лайк пользователя с id=" + userId + " на фильме с id=" + filmId + " не найден");
-        }
-
-        log.info("Лайк удалён: фильм={}, пользователь={}", filmId, userId);
+        filmStorage.removeLike(filmId, userId);
     }
 
-    public List<FilmDto> getTopFilms(int count) {
-        log.debug("Запрос топ-{} фильмов по лайкам", count);
-        return filmStorage.getTopFilms(count).stream()
-                .map(FilmMapper::mapToFilmDto)
+    public List<FilmResponseDto> getMostPopularFilms(int count) {
+        return filmStorage.getMostPopularFilms(count).stream()
+                .map(film -> {
+                    RatingIdAndNameDto mpa = filmStorage.getRatingByFilmId(film.getId());
+                    List<GenreIdAndNameDto> genres = filmStorage.getGenresByFilmId(film.getId());
+                    return FilmMapper.buildResponse(film, mpa, new ArrayList<>(genres));
+                })
                 .collect(Collectors.toList());
     }
 }
-
-
