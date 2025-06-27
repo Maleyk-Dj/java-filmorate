@@ -30,7 +30,7 @@ public class FilmService {
 
         Film saved = filmStorage.save(film);
 
-        FilmResponseDto responseDto = FilmMapper.buildResponse(saved);
+        FilmResponseDto responseDto = FilmMapper.toDto(saved);
         responseDto.setMpa(mpa);
         responseDto.setGenres(genres);
 
@@ -50,7 +50,7 @@ public class FilmService {
 
         filmStorage.update(updated);
 
-        FilmResponseDto responseDto = FilmMapper.buildResponse(updated);
+        FilmResponseDto responseDto = FilmMapper.toDto(updated);
         responseDto.setMpa(mpa);
         responseDto.setGenres(genres);
 
@@ -76,7 +76,7 @@ public class FilmService {
                     RatingLongDto mpa = filmStorage.getRatingByFilmId(film.getId());
                     List<GenreLongDto> genres = filmStorage.getGenresByFilmId(film.getId());
 
-                    FilmResponseDto responseDto = FilmMapper.buildResponse(film);
+                    FilmResponseDto responseDto = FilmMapper.toDto(film);
                     responseDto.setMpa(mpa);
                     responseDto.setGenres(new ArrayList<>(genres));
 
@@ -92,7 +92,7 @@ public class FilmService {
         RatingLongDto mpa = filmStorage.getRatingByFilmId(id);
         List<GenreLongDto> genres = filmStorage.getGenresByFilmId(id);
 
-        FilmResponseDto responseDto = FilmMapper.buildResponse(film);
+        FilmResponseDto responseDto = FilmMapper.toDto(film);
         responseDto.setMpa(mpa);
         responseDto.setGenres(new ArrayList<>(genres));
 
@@ -114,7 +114,7 @@ public class FilmService {
                     RatingLongDto mpa = filmStorage.getRatingByFilmId(film.getId());
                     List<GenreLongDto> genres = filmStorage.getGenresByFilmId(film.getId());
 
-                    FilmResponseDto responseDto = FilmMapper.buildResponse(film);
+                    FilmResponseDto responseDto = FilmMapper.toDto(film);
 
                     responseDto.setMpa(mpa);
                     responseDto.setGenres(new ArrayList<>(genres));

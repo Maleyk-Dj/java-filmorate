@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 @NoArgsConstructor
 public class FilmMapper {
 
-    public static FilmResponseDto buildResponse(Film film) {
+    public static FilmResponseDto toDto(Film film) {
         FilmResponseDto result = new FilmResponseDto();
         result.setId(film.getId());
         result.setName(film.getName());
