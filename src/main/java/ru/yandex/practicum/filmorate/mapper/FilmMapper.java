@@ -4,8 +4,6 @@ import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.dto.*;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.List;
-
 @NoArgsConstructor
 public class FilmMapper {
 
