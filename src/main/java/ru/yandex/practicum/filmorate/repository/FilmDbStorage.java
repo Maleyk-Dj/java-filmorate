@@ -165,7 +165,7 @@ public class FilmDbStorage implements FilmStorage {
                                                LEFT JOIN film_genre fg ON f.id = fg.film_id
                                                LEFT JOIN genre g ON fg.genre_id = g.id
                                                LEFT JOIN film_likes fl ON f.id = fl.film_id
-                                               GROUP BY f.id, r.name, g.id, g.name 
+                                               GROUP BY f.id, r.name, g.id, g.name
                                                ORDER BY COUNT(fl.user_id) DESC
                                                LIMIT ?
                 """;
