@@ -26,14 +26,14 @@ public class GenreService {
     public List<GenreLongDto> getAll() {
         List<Genre> genres = genreDbStorage.findAll();
         return genres.stream()
-                .map(GenreMapper::mapToIdAndNameDto)
+                .map(GenreMapper::mapToFullDto)
                 .collect(Collectors.toList());
     }
 
     public GenreLongDto getById(int id) {
         Genre genre = genreDbStorage.findById(id)
                 .orElseThrow(() -> new NotFoundException("Жанр с id = " + id + " не найден"));
-        return GenreMapper.mapToIdAndNameDto(genre);
+        return GenreMapper.mapToFullDto(genre);
     }
 
     public List<GenreLongDto> getByIds(Collection<GenreDto> dtos) {
@@ -53,7 +53,7 @@ public class GenreService {
         }
 
         return foundGenres.stream()
-                .map(GenreMapper::mapToIdAndNameDto)
+                .map(GenreMapper::mapToFullDto)
                 .collect(Collectors.toList());
     }
 }

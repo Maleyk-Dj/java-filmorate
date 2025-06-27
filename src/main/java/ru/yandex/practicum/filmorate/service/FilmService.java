@@ -65,8 +65,8 @@ public class FilmService {
         film.setDescription(dto.getDescription());
         film.setReleaseDate(dto.getReleaseDate());
         film.setDuration(dto.getDuration());
-        film.setMpa(RatingMapper.mapToRatingIdDto(mpa));
-        film.setGenres(GenreMapper.mapToListGenreIdDto(genres));
+        film.setMpa(RatingMapper.mapToDto(mpa));
+        film.setGenres(GenreMapper.mapToListDto(genres));
         return film;
     }
 

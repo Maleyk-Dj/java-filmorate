@@ -27,7 +27,7 @@ public class RatingService {
     public List<RatingLongDto> getAll() {
         List<Rating> ratings = ratingStorage.findAll();
         return ratings.stream()
-                .map(RatingMapper::mapToRatingIdAndNameDto)
+                .map(RatingMapper::mapToFullDto)
                 .collect(Collectors.toList());
     }
 }

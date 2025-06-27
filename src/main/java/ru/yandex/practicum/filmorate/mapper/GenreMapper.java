@@ -11,21 +11,21 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class GenreMapper {
 
-    public static GenreDto mapToGenreIdDto(GenreLongDto genreIdAndNameDto) {
+    public static GenreDto mapToDto(GenreLongDto genreIdAndNameDto) {
         GenreDto genreDto = new GenreDto();
         genreDto.setId(genreIdAndNameDto.getId());
         return genreDto;
     }
 
-    public static GenreLongDto mapToIdAndNameDto(Genre genre) {
+    public static GenreLongDto mapToFullDto(Genre genre) {
         GenreLongDto dto = new GenreLongDto();
         dto.setId(genre.getId());
         dto.setName(genre.getName());
         return dto;
     }
 
-    public static List<GenreDto> mapToListGenreIdDto(List<GenreLongDto> genreIdAndNameDtos) {
-        return genreIdAndNameDtos.stream().map(GenreMapper::mapToGenreIdDto).collect(Collectors.toList());
+    public static List<GenreDto> mapToListDto(List<GenreLongDto> genreIdAndNameDtos) {
+        return genreIdAndNameDtos.stream().map(GenreMapper::mapToDto).collect(Collectors.toList());
     }
 }
 
