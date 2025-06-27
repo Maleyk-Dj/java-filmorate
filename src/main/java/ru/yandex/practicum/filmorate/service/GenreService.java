@@ -2,8 +2,8 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dto.GenreIdAndNameDto;
-import ru.yandex.practicum.filmorate.dto.GenreIdDto;
+import ru.yandex.practicum.filmorate.dto.GenreLongDto;
+import ru.yandex.practicum.filmorate.dto.GenreDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.GenreMapper;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -23,24 +23,24 @@ public class GenreService {
 
     private final GenreDbStorage genreDbStorage;
 
-    public List<GenreIdAndNameDto> getAll() {
+    public List<GenreLongDto> getAll() {
         List<Genre> genres = genreDbStorage.findAll();
         return genres.stream()
                 .map(GenreMapper::mapToIdAndNameDto)
                 .collect(Collectors.toList());
     }
 
-    public GenreIdAndNameDto getById(int id) {
+    public GenreLongDto getById(int id) {
         Genre genre = genreDbStorage.findById(id)
                 .orElseThrow(() -> new NotFoundException("Жанр с id = " + id + " не найден"));
         return GenreMapper.mapToIdAndNameDto(genre);
     }
 
-    public List<GenreIdAndNameDto> getByIds(Collection<GenreIdDto> dtos) {
+    public List<GenreLongDto> getByIds(Collection<GenreDto> dtos) {
         if (dtos == null || dtos.isEmpty()) return Collections.emptyList();
 
         Set<Integer> ids = dtos.stream()
-                .map(GenreIdDto::getId)
+                .map(GenreDto::getId)
                 .collect(Collectors.toSet());
 
         List<Genre> foundGenres = genreDbStorage.findByIds(ids);

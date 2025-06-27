@@ -21,6 +21,6 @@ public class NewFilmRequest {
     @Positive
     private Integer duration;
 
-    private RatingIdDto mpa;
-    private List<GenreIdDto> genres;
+    private RatingDto mpa;
+    private List<GenreDto> genres;
 }

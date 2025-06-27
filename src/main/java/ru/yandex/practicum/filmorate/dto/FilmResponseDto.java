@@ -13,6 +13,6 @@ public class FilmResponseDto {
     private String description;
     private LocalDate releaseDate;
     private Long duration;
-    private RatingIdAndNameDto mpa;
-    private List<GenreIdAndNameDto> genres;
+    private RatingLongDto mpa;
+    private List<GenreLongDto> genres;
 }

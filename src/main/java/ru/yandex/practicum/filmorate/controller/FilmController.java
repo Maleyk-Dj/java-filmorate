@@ -21,8 +21,7 @@ public class FilmController {
 
     @PostMapping
     public ResponseEntity<FilmResponseDto> createFilm(@RequestBody @Valid NewFilmRequest request) {
-        FilmResponseDto created = filmService.createFilm(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(filmService.createFilm(request));
     }
 
     @PutMapping

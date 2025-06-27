@@ -27,7 +27,7 @@ public class UpdateFilmRequest {
     private Long duration;
 
     @NotNull
-    private RatingIdDto mpa;
+    private RatingDto mpa;
 
-    private Set<GenreIdDto> genres;
+    private Set<GenreDto> genres;
 }

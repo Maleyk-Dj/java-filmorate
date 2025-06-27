@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Rating {
 
-    private int id;
+    private Integer id;
     private String name;
 }

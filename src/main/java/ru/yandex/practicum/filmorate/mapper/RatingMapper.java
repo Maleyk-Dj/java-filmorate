@@ -1,16 +1,16 @@
 package ru.yandex.practicum.filmorate.mapper;
 
 
-import ru.yandex.practicum.filmorate.dto.RatingIdDto;
-import ru.yandex.practicum.filmorate.dto.RatingIdAndNameDto;
+import ru.yandex.practicum.filmorate.dto.RatingDto;
+import ru.yandex.practicum.filmorate.dto.RatingLongDto;
 import ru.yandex.practicum.filmorate.model.Rating;
 
 public class RatingMapper {
-    public static RatingIdDto mapToRatingIdDto(RatingIdAndNameDto ratingIdAndNameDto) {
-        return new RatingIdDto(ratingIdAndNameDto.getId());
+    public static RatingDto mapToRatingIdDto(RatingLongDto ratingLongDto) {
+        return new RatingDto(ratingLongDto.getId());
     }
 
-    public static RatingIdAndNameDto mapToRatingIdAndNameDto(Rating rating) {
-        return new RatingIdAndNameDto(rating.getId(), rating.getName());
+    public static RatingLongDto mapToRatingIdAndNameDto(Rating rating) {
+        return new RatingLongDto(rating.getId(), rating.getName());
     }
 }

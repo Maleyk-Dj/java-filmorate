@@ -9,17 +9,13 @@ import java.util.List;
 @NoArgsConstructor
 public class FilmMapper {
 
-    public static FilmResponseDto buildResponse(Film film,
-                                                RatingIdAndNameDto mpa,
-                                                List<GenreIdAndNameDto> genres) {
+    public static FilmResponseDto buildResponse(Film film) {
         FilmResponseDto result = new FilmResponseDto();
         result.setId(film.getId());
         result.setName(film.getName());
         result.setDescription(film.getDescription());
         result.setDuration(film.getDuration());
         result.setReleaseDate(film.getReleaseDate());
-        result.setGenres(genres);
-        result.setMpa(mpa);
         return result;
     }
 
@@ -31,19 +27,6 @@ public class FilmMapper {
         film.setDuration(dto.getDuration());
         film.setMpa(dto.getMpa());
         film.setGenres(dto.getGenres());
-        return film;
-    }
-
-    public static Film updateFields(Film film,
-                                    UpdateFilmRequest dto,
-                                    RatingIdAndNameDto mpa,
-                                    List<GenreIdAndNameDto> genres) {
-        film.setName(dto.getName());
-        film.setDescription(dto.getDescription());
-        film.setReleaseDate(dto.getReleaseDate());
-        film.setDuration(dto.getDuration());
-        film.setMpa(RatingMapper.mapToRatingIdDto(mpa));
-        film.setGenres(GenreMapper.mapToListGenreIdDto(genres));
         return film;
     }
 }

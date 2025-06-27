@@ -4,8 +4,8 @@ import lombok.Data;
 import jakarta.validation.constraints.*;
 import lombok.EqualsAndHashCode;
 import ru.yandex.practicum.filmorate.annotations.ValidReleaseDate;
-import ru.yandex.practicum.filmorate.dto.GenreIdDto;
-import ru.yandex.practicum.filmorate.dto.RatingIdDto;
+import ru.yandex.practicum.filmorate.dto.GenreDto;
+import ru.yandex.practicum.filmorate.dto.RatingDto;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -33,7 +33,7 @@ public class Film {
     @Positive(message = "Продолжительность фильма должна быть положительной")
     private long duration;
 
-    private RatingIdDto mpa;
-    private List<GenreIdDto> genres;
+    private RatingDto mpa;
+    private List<GenreDto> genres;
     private Set<Long> likes = new HashSet<>();
 }
