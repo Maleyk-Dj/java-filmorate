@@ -49,7 +49,7 @@ public class FilmDbStorage implements FilmStorage {
         } else {
             throw new IllegalStateException("Не удалось получить сгенерированный ID фильма");
         }
-        saveFilmGenres(film); // вставка жанров
+        saveFilmGenres(film);
         return film;
     }
 
@@ -83,10 +83,8 @@ public class FilmDbStorage implements FilmStorage {
                     WHERE f.id = ?
                 """;
 
-        // Используем FilmRowMapper для маппинга результата
         List<Film> films = jdbcTemplate.query(sql, new FilmRowMapper(), id);
 
-        // Если фильм найден, возвращаем его как Optional
         return films.stream().findFirst();
     }
 
