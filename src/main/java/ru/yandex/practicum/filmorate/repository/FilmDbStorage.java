@@ -74,13 +74,13 @@ public class FilmDbStorage implements FilmStorage {
     public Optional<Film> findFilmById(Long id) {
 
 
-        String sql = """ 
-                    SELECT f.*, r.name as rating_name, g.id as genre_id, g.name as genre_name
-                    FROM film f
-                    LEFT JOIN rating r ON f.rating_id = r.id
-                    LEFT JOIN film_genre fg ON f.id = fg.film_id
-                    LEFT JOIN genre g ON fg.genre_id = g.id
-                    WHERE f.id = ?
+        String sql = """
+                SELECT f.*, r.name as rating_name, g.id as genre_id, g.name as genre_name
+                                    FROM film f
+                                    LEFT JOIN rating r ON f.rating_id = r.id
+                                    LEFT JOIN film_genre fg ON f.id = fg.film_id
+                                    LEFT JOIN genre g ON fg.genre_id = g.id
+                                    WHERE f.id = ?
                 """;
 
         List<Film> films = jdbcTemplate.query(sql, new FilmRowMapper(), id);
@@ -93,11 +93,11 @@ public class FilmDbStorage implements FilmStorage {
     public Collection<Film> getAllFilms() {
 
         String sql = """
-                    SELECT f.*, r.name as rating_name, g.id as genre_id, g.name as genre_name
-                    FROM film f
-                    LEFT JOIN rating r ON f.rating_id = r.id
-                    LEFT JOIN film_genre fg ON f.id = fg.film_id
-                    LEFT JOIN genre g ON fg.genre_id = g.id
+                SELECT f.*, r.name as rating_name, g.id as genre_id, g.name as genre_name
+                                    FROM film f
+                                    LEFT JOIN rating r ON f.rating_id = r.id
+                                    LEFT JOIN film_genre fg ON f.id = fg.film_id
+                                    LEFT JOIN genre g ON fg.genre_id = g.id
                 """;
 
         List<Film> films = jdbcTemplate.query(sql, new FilmRowMapper());
@@ -159,15 +159,15 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getMostPopularFilms(int count) {
         String sql = """
-                        SELECT f.*, r.name as rating_name, g.id as genre_id, g.name as genre_name
-                               FROM film f
-                               LEFT JOIN rating r ON f.rating_id = r.id
-                               LEFT JOIN film_genre fg ON f.id = fg.film_id
-                               LEFT JOIN genre g ON fg.genre_id = g.id
-                               LEFT JOIN film_likes fl ON f.id = fl.film_id
-                               GROUP BY f.id, r.name, g.id, g.name 
-                               ORDER BY COUNT(fl.user_id) DESC
-                               LIMIT ?                   
+                SELECT f.*, r.name as rating_name, g.id as genre_id, g.name as genre_name
+                                               FROM film f
+                                               LEFT JOIN rating r ON f.rating_id = r.id
+                                               LEFT JOIN film_genre fg ON f.id = fg.film_id
+                                               LEFT JOIN genre g ON fg.genre_id = g.id
+                                               LEFT JOIN film_likes fl ON f.id = fl.film_id
+                                               GROUP BY f.id, r.name, g.id, g.name 
+                                               ORDER BY COUNT(fl.user_id) DESC
+                                               LIMIT ?
                 """;
         return jdbcTemplate.query(sql, filmRowMapper, count);
     }
