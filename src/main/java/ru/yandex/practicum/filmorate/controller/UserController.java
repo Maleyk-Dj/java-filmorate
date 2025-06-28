@@ -3,13 +3,19 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.NewUserRequest;
+import ru.yandex.practicum.filmorate.dto.UpdateUserRequest;
+import ru.yandex.practicum.filmorate.dto.UserDto;
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -18,49 +24,61 @@ import java.util.Set;
 public class UserController {
 
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody @Valid User user) {
-        return ResponseEntity.ok(userService.createUser(user));
+    public ResponseEntity<UserDto> createUser(@RequestBody @Valid NewUserRequest request) {
+        User user = userMapper.fromNewRequest(request);
+        User created = userService.createUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(userMapper.toDto(created));
     }
 
     @PutMapping
-    public ResponseEntity<User> updateUser(@Valid @RequestBody User user) {
-        return ResponseEntity.ok(userService.updateUser(user));
+    public ResponseEntity<UserDto> updateUser(@RequestBody @Valid UpdateUserRequest request) {
+        User user = userMapper.fromUpdateRequest(request);
+        User updated = userService.updateUser(user);
+        return ResponseEntity.ok(userMapper.toDto(updated));
     }
 
     @GetMapping
-    public ResponseEntity<Collection<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    public ResponseEntity<Collection<UserDto>> getAllUsers() {
+        Collection<UserDto> users = userService.getAllUsers().stream()
+                .map(userMapper::toDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(userMapper.toDto(userService.getUserById(id)));
     }
 
     @PutMapping("/{id}/friends/{friendId}")
-    public ResponseEntity<User> addFriend(@PathVariable Long id, @PathVariable Long friendId) {
-        return ResponseEntity.ok(userService.addFriend(id, friendId));
+    public ResponseEntity<Void> addFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        userService.addFriend(id, friendId);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
-    public ResponseEntity<User> removeFriend(@PathVariable Long id, @PathVariable Long friendId) {
-        log.debug("Вызов метода removeFriend c параметрами:id={},friendId={}", id, friendId);
-        User result = userService.removeFriend(id, friendId);
-        log.debug("Пользователь с id={} удалил из друзей пользователя с id={} ", id, friendId);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<Void> removeFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        userService.removeFriend(id, friendId);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}/friends")
-    public ResponseEntity<Collection<User>> getFriends(@PathVariable Long id) {
-        log.debug("Вызов метода getFriends c параметрами:id={}", id);
-        Set<User> result = userService.getFriends(id);
-        log.debug("Возвращен список друзей пользователя с id={} ", id);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<Set<UserDto>> getFriends(@PathVariable Long id) {
+        Set<UserDto> friends = userService.getFriends(id).stream()
+                .map(userMapper::toDto)
+                .collect(Collectors.toSet());
+        return ResponseEntity.ok(friends);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public ResponseEntity<Collection<User>> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
-        log.debug("Вызов метода getCommonFriends c параметрами:id={},otherId={}", id, otherId);
-        Collection<User> result = userService.getCommonFriends(id, otherId);
-        log.debug("Возвращен список общих друзей пользователей с id={},otherId={} ", id, otherId);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<Set<UserDto>> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
+        Set<UserDto> friends = userService.getCommonFriends(id, otherId).stream()
+                .map(userMapper::toDto)
+                .collect(Collectors.toSet());
+        return ResponseEntity.ok(friends);
     }
-
 }
+
